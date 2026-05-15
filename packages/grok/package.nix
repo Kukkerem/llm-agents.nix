@@ -77,6 +77,7 @@ stdenv.mkDerivation {
     done
   ''
   + lib.optionalString (!stdenv.hostPlatform.isLinux) ''
+    install -d $out/bin
     ln -s $out/libexec/grok/grok-launcher $out/bin/grok
     ln -s $out/libexec/grok/agent-launcher $out/bin/agent
   ''
