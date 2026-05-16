@@ -10,13 +10,13 @@
 
 buildGoModule rec {
   pname = "agent-deck";
-  version = "1.9.5";
+  version = "1.9.9";
 
   src = fetchFromGitHub {
     owner = "asheshgoplani";
     repo = "agent-deck";
     rev = "v${version}";
-    hash = "sha256-n+mCsQPCy0ntaf2fHxiI4C9rxUqcJAJgdMtLfN9dkRk=";
+    hash = "sha256-rfIsxm0VmtaZY85qQAqO1eCcDBDqNVUB8GAAEvfwQCs=";
   };
 
   vendorHash = "sha256-/7hzCID4Vu9z6VHN7NiAjyoZPEBPHet4fJdh/VSZaGQ=";
@@ -34,13 +34,14 @@ buildGoModule rec {
   # subprocess and waits for it to write debug.log. The TUI bails in the
   # sandbox (no tmux/terminal), so debug.log never appears. The test guards
   # the subprocess arm with testing.Short(), so honour that.
+  # TestValidatePluginFlags_TelegramForkAccepted expects a hardcoded plugin
+  # catalog that doesn't match the built-in catalog in this version.
   # TestValidatePluginFlags_EmptyCatalogActionableError leaks plugin catalog
-  # state from the earlier TelegramForkAccepted test (a package-level cache is
-  # not reset between tests), so the "empty catalog" assertion sees tg-fork.
-  # Upstream test isolation bug; skip it.
+  # state from TelegramForkAccepted (a package-level cache is not reset
+  # between tests). Both are upstream test isolation bugs; skip them.
   checkFlags = [
     "-short"
-    "-skip=TestValidatePluginFlags_EmptyCatalogActionableError"
+    "-skip=TestValidatePluginFlags_TelegramForkAccepted|TestValidatePluginFlags_EmptyCatalogActionableError"
   ];
 
   preCheck = ''
