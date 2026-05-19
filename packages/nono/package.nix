@@ -24,6 +24,10 @@ rustPlatform.buildRustPackage rec {
 
   cargoHash = "sha256-MBTUSNbOWOhrYL18+yPCg6Ydjym50JMuqTt/U0kQiL4=";
 
+  # `if let` guards in match arms require Rust >= 1.95; rewrite the single
+  # use until nixpkgs ships a new enough rustc.
+  patches = [ ./no-if-let-guard.patch ];
+
   # keyring uses sync-secret-service (dbus) on Linux, apple-native on Darwin
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ dbus ];
   # unpinCargoMsrvHook: upstream pins rust-version = "1.95" (unreleased MSRV
