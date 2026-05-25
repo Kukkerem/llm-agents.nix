@@ -36,14 +36,14 @@ let
 in
 python3.pkgs.buildPythonApplication rec {
   pname = "bernstein";
-  version = "2.2.0";
+  version = "2.7.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "chernistry";
     repo = "bernstein";
     tag = "v${version}";
-    hash = "sha256-6l9yWKv1r8JWTgZp0/moOXtmlstOhtaO2vHMMiIGsKQ=";
+    hash = "sha256-LteVxDw0Nk7HcPhL+unjCSRIquTC1IgTNf9enAWU+z8=";
   };
 
   # Upstream sometimes tags a release without bumping the version in
@@ -96,6 +96,7 @@ python3.pkgs.buildPythonApplication rec {
   pythonRelaxDeps = [
     "click"
     "cryptography"
+    "idna"
     "openai"
     "opentelemetry-api"
     "opentelemetry-exporter-otlp"
@@ -103,6 +104,7 @@ python3.pkgs.buildPythonApplication rec {
     "pillow"
     "pydantic-settings"
     "python-dotenv"
+    "starlette"
   ];
 
   # bernstein re-invokes itself and uvicorn via ``sys.executable -m ...``
