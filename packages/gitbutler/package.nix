@@ -24,31 +24,12 @@
   rust,
   rustPlatform,
   turbo,
-  turbo-unwrapped,
-  kdePackages,
   webkitgtk_4_1,
   wrapGAppsHook4,
   unpinCargoMsrvHook,
 }:
 let
   pnpm = pnpm_10;
-  # Workaround until https://github.com/NixOS/nixpkgs/pull/518987 lands:
-  # ECM is pure CMake macros but defaults to linux/freebsd-only via
-  # mkKdeDerivation, breaking turbo-unwrapped eval on Darwin.
-  ecm = kdePackages.extra-cmake-modules.overrideAttrs (old: {
-    meta = old.meta // {
-      platforms = lib.platforms.all;
-    };
-  });
-  turbo' = turbo.override {
-    turbo-unwrapped = turbo-unwrapped.override {
-      kdePackages = kdePackages.overrideScope (
-        _: _: {
-          extra-cmake-modules = ecm;
-        }
-      );
-    };
-  };
 in
 
 rustPlatform.buildRustPackage (finalAttrs: {
@@ -100,7 +81,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     pkg-config
     pnpm
     pnpmConfigHook
-    turbo'
+    turbo
     wrapGAppsHook4
   ]
   ++ lib.optional stdenv.hostPlatform.isDarwin makeBinaryWrapper;
@@ -135,7 +116,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # Task tracing requires Tokio built with this cfg.
     RUSTFLAGS = "--cfg tokio_unstable";
 
-    TUBRO_BINARY_PATH = lib.getExe turbo';
+    TUBRO_BINARY_PATH = lib.getExe turbo;
     TURBO_TELEMETRY_DISABLED = 1;
 
     OPENSSL_NO_VENDOR = true;
@@ -148,7 +129,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     substituteInPlace node_modules/.pnpm/sass-embedded@*/node_modules/sass-embedded/dist/lib/src/compiler-path.js \
       --replace-fail 'compilerCommand = (() => {' 'compilerCommand = (() => { return ["${lib.getExe dart-sass}"];'
 
-    ${lib.getExe turbo'} run --filter @gitbutler/svelte-comment-injector build
+    ${lib.getExe turbo} run --filter @gitbutler/svelte-comment-injector build
     pnpm build:desktop -- --mode production
   '';
 
