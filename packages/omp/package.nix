@@ -215,14 +215,22 @@ stdenv.mkDerivation {
     echo "Generating docs index..."
     bun packages/coding-agent/scripts/generate-docs-index.ts
 
+    # Generate the embedded stats dashboard client bundle
+    echo "Generating embedded stats dashboard..."
+    bun --cwd packages/stats scripts/generate-client-bundle.ts --generate
+
     # Compile the standalone binary
     echo "Compiling standalone binary..."
     bun build --compile \
-      --define PI_COMPILED=true \
       --external mupdf \
       --target="${platform.bunTarget}" \
       --root . \
       ./packages/coding-agent/src/cli.ts \
+      ./packages/stats/src/sync-worker.ts \
+      ./packages/coding-agent/src/tools/browser/tab-worker-entry.ts \
+      ./packages/coding-agent/src/eval/js/worker-entry.ts \
+      ./packages/coding-agent/src/extensibility/typebox.ts \
+      ./packages/coding-agent/src/extensibility/legacy-pi-ai-shim.ts \
       --outfile dist/omp
 
     runHook postBuild
